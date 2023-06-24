@@ -39,6 +39,7 @@ public class ViewListOfBirthdays extends AppCompatActivity {
 
     public View.OnClickListener mGoBack = new View.OnClickListener() {
         @Override
+        // Returns to the MainActivity
         public void onClick(View view) {
             finish();
         }
@@ -46,6 +47,7 @@ public class ViewListOfBirthdays extends AppCompatActivity {
 
     public AdapterView.OnItemClickListener clickListItem = new AdapterView.OnItemClickListener() {
         @Override
+        // Select the index of the element in the list that was clicked on
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             selectedEntry = i;
         }
@@ -54,22 +56,32 @@ public class ViewListOfBirthdays extends AppCompatActivity {
     public View.OnClickListener mDeleteEntry = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+            // Check if a valid entry was clicked
             if (selectedEntry == 0){
                 Toast.makeText(ViewListOfBirthdays.this, "Select a valid entry first", Toast.LENGTH_LONG).show();
             } else {
+                //If valid entry was clicked, remove element from data storage and update list
                 String entryString = listOfBirthdayItems.get(selectedEntry);
+                //Extract the key from the string containing key and birthdate
                 String key = entryString.substring(0, entryString.lastIndexOf(":"));
                 SharedPreferences.Editor editor = mSharedPreferences.edit();
                 editor.remove(key);
-                editor.commit();
-                updateList();
-                String toastText = "Deleted birthday entry for '" + key + "'!";
-                Toast.makeText(ViewListOfBirthdays.this, toastText, Toast.LENGTH_LONG).show();
+                //Update user on whether deletion was successful
+                if (editor.commit()){
+                    updateList();
+                    String toastText = "Deleted birthday entry for '" + key + "'!";
+                    Toast.makeText(ViewListOfBirthdays.this, toastText, Toast.LENGTH_LONG).show();
+                } else {
+                    String toastText = "Was not able to delete entry!";
+                    Toast.makeText(ViewListOfBirthdays.this, toastText, Toast.LENGTH_LONG).show();
+                }
+
             }
         }
     };
 
     private void updateList(){
+        //Create ArrayAdapter using entries from SharedPreferences that contains the birth dates
         listOfBirthdayItems = returnAllBirthdays();
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this,
                 androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
@@ -79,6 +91,7 @@ public class ViewListOfBirthdays extends AppCompatActivity {
     }
 
     private ArrayList<String> returnAllBirthdays(){
+        //Retrieve all the birth dates
         ArrayList<String> arrayOfAllBirthdays = new ArrayList<>();
         arrayOfAllBirthdays.add("NAME:     BIRTHDAY");
         Map<String, ?> allBirthdays = mSharedPreferences.getAll();

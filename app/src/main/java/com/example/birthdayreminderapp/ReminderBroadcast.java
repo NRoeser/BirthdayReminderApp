@@ -18,10 +18,11 @@ public class ReminderBroadcast extends BroadcastReceiver {
     public static int ID = 200;
     @Override
     public void onReceive(Context context, Intent intent) {
+        //Get name and new age from intent extra
         String extra = intent.getStringExtra("Name");
-        Log.d("BROADCASTEXTRA", extra);
         String name = extra.substring(0,extra.lastIndexOf("?"));
-        String year = extra.substring(extra.lastIndexOf("?")+1, extra.length());
+        String year = extra.substring(extra.lastIndexOf("?")+1);
+        //Create Notification and set icons, text and title
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "birthdayReminder")
                 .setSmallIcon(R.drawable.ic_launcher_background)
                 .setContentTitle("Birthday!")
@@ -29,7 +30,6 @@ public class ReminderBroadcast extends BroadcastReceiver {
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
 
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
-
         if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             throw new RuntimeException("Not the necessary permissions granted!");
         }

@@ -33,15 +33,14 @@
 
     <TextView
         android:id="@+id/textView2"
-        android:layout_width="290dp"
-        android:layout_height="48dp"
-        android:text="Note: If the name already exists, the birthdate will be overwritten"
+        android:layout_width="294dp"
+        android:layout_height="85dp"
+        android:text="Note: If the name already exists, the birthdate will be overwritten. Notification reminder for the next 4 years will be set for the reminder time that is currently saved at the moment of adding a new entry"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.12" />
+        app:layout_constraintVertical_bias="0.132" />
 
     <Button
         android:id="@+id/saveNewEntry"
