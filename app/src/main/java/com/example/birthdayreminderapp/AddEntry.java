@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -22,7 +23,6 @@ import java.util.Map;
 
 public class AddEntry extends AppCompatActivity {
 
-
     private Button saveDate;
     private Button goToMainMenu;
     private EditText newNameField;
@@ -30,6 +30,7 @@ public class AddEntry extends AppCompatActivity {
     private SharedPreferences mSharedPreferences;
     private SharedPreferences reminderTimePreferences;
     public static final String SAVE_LOCATION = "BIRTHDAYS";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,9 +58,9 @@ public class AddEntry extends AppCompatActivity {
                 return;
             }
             int day = birthdayPicker.getDayOfMonth();
-            int month = birthdayPicker.getMonth() + 1;
+            int month = birthdayPicker.getMonth();
             int year = birthdayPicker.getYear();
-            String date = createDateString(day, month, year);
+            String date = createDateString(day, month + 1, year);
             SharedPreferences.Editor editor = mSharedPreferences.edit();
             editor.putString(name, date);
             String toastText = "Saved birthday and made reminder for '" + name + "'!";
@@ -72,18 +73,28 @@ public class AddEntry extends AppCompatActivity {
             for (int i = 0; i<4; i++) {
                 Calendar currentDate = Calendar.getInstance();
                 Calendar myAlarmDate = Calendar.getInstance();
-                myAlarmDate.setTimeInMillis(System.currentTimeMillis());
-                myAlarmDate.set(currentDate.get(Calendar.YEAR) + i, month, day,
-                        reminderTimePreferences.getInt(MainActivity.HOUR_KEY, 10),
-                        reminderTimePreferences.getInt(MainActivity.MINUTE_KEY, 0));
 
-                Intent intent = new Intent(AddEntry.this, ReminderBroadcast.class);
-                intent.putExtra("Name", name);
-                intent.putExtra("Age", currentDate.get(Calendar.YEAR) - year);
-                PendingIntent pendingIntent = PendingIntent.getBroadcast(AddEntry.this, 0, intent, PendingIntent.FLAG_MUTABLE);
+                myAlarmDate.set(Calendar.YEAR, currentDate.get(Calendar.YEAR) + i);
+                myAlarmDate.set(Calendar.MONTH, month);
+                myAlarmDate.set(Calendar.DATE, day);
+                myAlarmDate.set(Calendar.HOUR, reminderTimePreferences.getInt(MainActivity.HOUR_KEY, 10));
+                myAlarmDate.set(Calendar.MINUTE,reminderTimePreferences.getInt(MainActivity.MINUTE_KEY, 0));
 
-                AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-                alarmManager.setExact(AlarmManager.RTC_WAKEUP, myAlarmDate.getTimeInMillis(), pendingIntent);
+                if (!myAlarmDate.getTime().before(currentDate.getTime())){
+                    Intent intent = new Intent(AddEntry.this, ReminderBroadcast.class);
+                    String nameAndAge = name + "?" +(currentDate.get(Calendar.YEAR)-year);
+                    intent.putExtra("Name", nameAndAge);
+                    int requestCode = reminderTimePreferences.getInt("requestCode", 0);
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(AddEntry.this,
+                            requestCode, intent, PendingIntent.FLAG_MUTABLE);
+                    requestCode++;
+                    SharedPreferences.Editor requestCodeEditor = reminderTimePreferences.edit();
+                    requestCodeEditor.putInt("requestCode", requestCode);
+                    requestCodeEditor.commit();
+                    AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+                    alarmManager.setExact(AlarmManager.RTC_WAKEUP, myAlarmDate.getTimeInMillis(), pendingIntent);
+                }
+
             }
         }
     };

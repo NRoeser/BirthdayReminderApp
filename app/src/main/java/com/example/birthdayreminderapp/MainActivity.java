@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Button saveTime;
     private Button goToAddEntry;
+    private Button goToListOfBirthdays;
     private SharedPreferences mSharedPreferences;
     private TimePicker reminderPicker;
 
@@ -36,10 +37,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         goToAddEntry = (Button) findViewById(R.id.goToAddEntryMenu);
         saveTime = (Button) findViewById(R.id.saveTime);
+        goToListOfBirthdays = (Button) findViewById(R.id.viewListOfBirthdays);
         reminderPicker = (TimePicker) findViewById(R.id.reminderPicker);
         reminderPicker.setIs24HourView(true);
         goToAddEntry.setOnClickListener(mgoToAddEntryMenu);
         saveTime.setOnClickListener(saveReminderTime);
+        goToListOfBirthdays.setOnClickListener(mgoToListOfBirthdays);
         mSharedPreferences = getSharedPreferences(SAVE_LOCATION, MODE_PRIVATE);
     }
 
@@ -64,6 +67,14 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(MainActivity.this, "Could not make change", Toast.LENGTH_LONG).show();
             }
+        }
+    };
+
+    public View.OnClickListener mgoToListOfBirthdays = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Intent intent = new Intent(MainActivity.this, ViewListOfBirthdays.class);
+            startActivity(intent);
         }
     };
 
